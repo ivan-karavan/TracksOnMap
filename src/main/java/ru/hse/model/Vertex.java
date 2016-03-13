@@ -1,9 +1,7 @@
-package ru.hse.newModel;
+package ru.hse.model;
 
-import com.google.gwt.maps.client.services.Time;
 import com.vaadin.tapio.googlemaps.client.LatLon;
 import com.vaadin.tapio.googlemaps.client.overlays.GoogleMapMarker;
-import com.vaadin.ui.Calendar;
 
 /**
  * Created by Ivan on 11.03.2016.
@@ -55,6 +53,7 @@ public class Vertex extends GoogleMapMarker {
         previous = null;
         windSpeed = 0;
         timeStamp = null;
+        setAnimationEnabled(true);
     }
 
     public Vertex(String caption, LatLon position, String iconUrl, double windSpeed) {

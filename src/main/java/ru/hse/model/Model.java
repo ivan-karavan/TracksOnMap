@@ -1,4 +1,4 @@
-package ru.hse.newModel;
+package ru.hse.model;
 
 import com.vaadin.tapio.googlemaps.GoogleMap;
 import com.vaadin.tapio.googlemaps.client.LatLon;
@@ -49,6 +49,12 @@ public class Model {
 
     }
 
+    /**
+     * Draw line on the map between first and second and save this line.
+     * Order is important
+     * @param first start of the line
+     * @param second end of the line
+     */
     public void connectVertices(Vertex first, Vertex second) {
         // на будущее
 //        if (first.getWindSpeed() > 0) {
@@ -65,6 +71,12 @@ public class Model {
         }
     }
 
+    /**
+     * Remove line on the map between first and second.
+     * Order is important
+     * @param first start of the line
+     * @param second end of the line
+     */
     public void disconnectVertices(Vertex first, Vertex second) {
         map.removePolyline(linesFromVertices.get(first));
         linesFromVertices.remove(first);

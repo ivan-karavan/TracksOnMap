@@ -8,8 +8,8 @@ import com.vaadin.tapio.googlemaps.client.events.MarkerDragListener;
 import com.vaadin.tapio.googlemaps.client.overlays.GoogleMapMarker;
 import com.vaadin.ui.*;
 import ru.hse.controller.*;
-import ru.hse.newModel.Model;
-import ru.hse.newModel.Vertex;
+import ru.hse.model.Model;
+import ru.hse.model.Vertex;
 
 /**
  * Created by Ivan on 12.03.2016.
@@ -52,7 +52,7 @@ public class View{
         rootLayout.addComponent(fullContent);
 
         topRowOfButtons = new HorizontalLayout();
-        topRowOfButtons.setHeight("38px");
+        topRowOfButtons.setHeight("37px");
         fullContent.addComponent(topRowOfButtons);
 
         map.setCenter(new LatLon(60, 20));
@@ -63,7 +63,7 @@ public class View{
 
 
         bottomRowOfButtons = new HorizontalLayout();
-        bottomRowOfButtons.setHeight("38px");
+        bottomRowOfButtons.setHeight("37px");
         fullContent.addComponent(bottomRowOfButtons);
     }
 
@@ -94,7 +94,9 @@ public class View{
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
                 if (!(lastClickedVertex == null || previousClickedVertex == null)) {
-                    Command connectVertices = new ConnectCommand(lastClickedVertex, previousClickedVertex);
+                    // TODO: if any vertice alone - connectVerticesCommand
+                    // TODO: otherwise - connectTracksCommand
+                    Command connectVertices = new ConnectVertexCommand(lastClickedVertex, previousClickedVertex);
                     controller.handle(connectVertices);
 
                     lastClickedVertex = previousClickedVertex = null;
@@ -108,7 +110,8 @@ public class View{
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
                 if (!(lastClickedVertex == null || previousClickedVertex == null)) {
-                    Command disconnectVertices = new DisconnectCommand(lastClickedVertex, previousClickedVertex);
+                    //Command disconnectVertices = new DisconnectCommand(lastClickedVertex, previousClickedVertex);
+                    Command disconnectVertices = new DisconnectCommand(lastClickedVertex);
                     controller.handle(disconnectVertices);
 
                     lastClickedVertex = previousClickedVertex = null;

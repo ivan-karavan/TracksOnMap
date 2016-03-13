@@ -1,7 +1,7 @@
 package ru.hse.controller;
 
-import ru.hse.newModel.Model;
-import ru.hse.newModel.Vertex;
+import ru.hse.model.Model;
+import ru.hse.model.Vertex;
 
 /**
  * Created by Ivan on 11.03.2016.

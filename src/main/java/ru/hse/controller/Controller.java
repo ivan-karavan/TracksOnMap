@@ -1,6 +1,6 @@
 package ru.hse.controller;
 
-import ru.hse.newModel.Model;
+import ru.hse.model.Model;
 
 import java.util.ArrayList;
 

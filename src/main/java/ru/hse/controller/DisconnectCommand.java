@@ -1,7 +1,7 @@
 package ru.hse.controller;
 
-import ru.hse.newModel.Model;
-import ru.hse.newModel.Vertex;
+import ru.hse.model.Model;
+import ru.hse.model.Vertex;
 
 /**
  * Created by Ivan on 12.03.2016.
@@ -13,41 +13,49 @@ public class DisconnectCommand extends Command {
      */
     private Vertex to = null;
 
+    private Vertex vertex = null;
+    private Vertex next = null;
+    private Vertex previous = null;
+
     public DisconnectCommand(Vertex from, Vertex to) {
         this.from = from;
         this.to = to;
-        // TODO: if from.next != to, but from.previous == to
+    }
+
+    public DisconnectCommand(Vertex vertex) {
+        this.vertex = vertex;
+        next = vertex.getNext();
+        previous = vertex.getPrevious();
     }
 
     @Override
     public void execute(Model model) {
-        if (to.getNext() != null) {
-            model.disconnectVertices(from, to);
-            model.disconnectVertices(to, to.getNext());
-            model.connectVertices(from, to.getNext());
-
-            from.setNext(to.getNext());
-            to.setNext(null);
+        if (next != null) {
+            model.disconnectVertices(vertex, next);
+            next.setPrevious(vertex.getPrevious());
         }
-        else {
-            model.disconnectVertices(from, to);
-            from.setNext(null);
+        if (previous != null) {
+            model.disconnectVertices(previous, vertex);
+            previous.setNext(vertex.getNext());
         }
+        vertex.setNext(null);
+        vertex.setPrevious(null);
     }
 
     @Override
     public void unexecute(Model model) {
-        if (from.getNext() != null) {
-            model.disconnectVertices(from, from.getNext());
-            model.connectVertices(to, from.getNext());
-            model.connectVertices(from, to);
-
-            to.setNext(from.getNext());
-            from.setNext(to);
+        if (next != null && previous != null) {
+            model.disconnectVertices(previous, next);
         }
-        else {
-            model.connectVertices(from, to);
-            from.setNext(to);
+        if (next != null) {
+            model.connectVertices(vertex, next);
+            next.setPrevious(vertex);
+            vertex.setNext(next);
+        }
+        if (previous != null) {
+            model.connectVertices(previous, vertex);
+            previous.setNext(vertex);
+            vertex.setPrevious(previous);
         }
     }
 }

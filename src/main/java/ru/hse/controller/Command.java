@@ -1,6 +1,6 @@
 package ru.hse.controller;
 
-import ru.hse.newModel.Model;
+import ru.hse.model.Model;
 
 /**
  * Created by Ivan on 11.03.2016.
