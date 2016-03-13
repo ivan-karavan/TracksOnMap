@@ -1,4 +1,4 @@
-package ru.hse.View;
+package ru.hse.view;
 
 import com.vaadin.tapio.googlemaps.GoogleMap;
 import com.vaadin.tapio.googlemaps.client.LatLon;
@@ -39,13 +39,6 @@ public class View{
         controller = new Controller(model);
     }
 
-//    @Override
-//    protected void init(VaadinRequest vaadinRequest) {
-//        initComponents();
-//        initListeners();
-//    }
-
-
     public CssLayout getRootLayout() {
         return rootLayout;
     }
@@ -53,7 +46,6 @@ public class View{
     public void initComponents() {
         rootLayout = new CssLayout();
         rootLayout.setSizeFull();
-        //this.setContent(rootLayout);
 
         fullContent = new VerticalLayout();
         fullContent.setSizeFull();
@@ -77,7 +69,7 @@ public class View{
 
     public void initListeners() {
         undo = new Button("undo");
-        //undo.setIcon(new ExternalResource("https://cdn2.iconfinder.com/data/icons/windows-8-metro-style/128/undo.png"));
+        //undo.setIcon
         undo.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
@@ -88,7 +80,7 @@ public class View{
 
 
         redo = new Button("redo");
-        //redo.setIcon(new ExternalResource("http://files.softicons.com/download/system-icons/web0.2ama-icons-by-chrfb/png/256x256/Toolbar%20-%20Redo.png"));
+        //redo.setIcon
         redo.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {

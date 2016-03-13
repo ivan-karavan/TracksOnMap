@@ -13,9 +13,6 @@ import java.util.HashMap;
 public class Model {
     private GoogleMap map;
 
-    private Vertex currentVertex;
-    private Vertex previousClickedVertex;
-
     private HashMap<Vertex, GoogleMapPolyline> linesFromVertices;
     private HashMap<Vertex, GoogleMapPolyline> linesToVertices;
 
@@ -76,21 +73,5 @@ public class Model {
 
     public GoogleMap getMap() {
         return map;
-    }
-
-    public Vertex getCurrentVertex() {
-        return currentVertex;
-    }
-
-    public void setCurrentVertex(Vertex currentVertex) {
-        this.currentVertex = currentVertex;
-    }
-
-    public Vertex getPreviousClickedVertex() {
-        return previousClickedVertex;
-    }
-
-    public void setPreviousClickedVertex(Vertex previousClickedVertex) {
-        this.previousClickedVertex = previousClickedVertex;
     }
 }
