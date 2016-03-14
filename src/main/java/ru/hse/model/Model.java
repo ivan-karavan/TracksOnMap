@@ -86,4 +86,36 @@ public class Model {
     public GoogleMap getMap() {
         return map;
     }
+
+    /**
+     * при загрузке треков будет ошибка, если сохранять в бд направление
+     */
+    public void connectTracksWithOneDirection(Vertex first, Vertex second, String direction) {
+        ArrayList<LatLon> coordinates = new ArrayList<>(2);
+        coordinates.add(first.getPosition());
+        coordinates.add(second.getPosition());
+        GoogleMapPolyline line = new GoogleMapPolyline(coordinates);
+        map.addPolyline(line);
+        if (direction.equals("next")) {
+            linesFromVertices.put(first, line);
+            linesFromVertices.put(second, line);
+        }
+        else {
+            linesToVertices.put(first, line);
+            linesToVertices.put(second, line);
+        }
+    }
+
+    public void disconnectTracks(Vertex first, Vertex second, String direction) {
+        if (direction.equals("next")) {
+            map.removePolyline(linesFromVertices.get(first));
+            linesFromVertices.remove(first);
+            linesFromVertices.remove(second);
+        }
+        else {
+            map.removePolyline(linesToVertices.get(first));
+            linesToVertices.remove(first);
+            linesToVertices.remove(second);
+        }
+    }
 }

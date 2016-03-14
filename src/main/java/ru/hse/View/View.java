@@ -94,9 +94,16 @@ public class View{
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
                 if (!(lastClickedVertex == null || previousClickedVertex == null)) {
-                    // TODO: if any vertice alone - connectVerticesCommand
-                    // TODO: otherwise - connectTracksCommand
-                    Command connectVertices = new ConnectVertexCommand(lastClickedVertex, previousClickedVertex);
+                    // if any vertice alone - connectVerticesCommand
+                    // otherwise - connectTracksCommand
+                    Command connectVertices;
+                    if ((lastClickedVertex.getNext() == null && lastClickedVertex.getPrevious() == null) ||
+                            (previousClickedVertex.getNext() == null && previousClickedVertex.getPrevious() == null)) {
+                        connectVertices = new ConnectVertexCommand(lastClickedVertex, previousClickedVertex);
+                    }
+                    else {
+                        connectVertices = new ConnectTracksCommand(lastClickedVertex, previousClickedVertex);
+                    }
                     controller.handle(connectVertices);
 
                     lastClickedVertex = previousClickedVertex = null;
@@ -109,8 +116,7 @@ public class View{
         disconnectVertices = new Button("Disconnect Vertices", new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
-                if (!(lastClickedVertex == null || previousClickedVertex == null)) {
-                    //Command disconnectVertices = new DisconnectCommand(lastClickedVertex, previousClickedVertex);
+                if (lastClickedVertex != null) {
                     Command disconnectVertices = new DisconnectCommand(lastClickedVertex);
                     controller.handle(disconnectVertices);
 

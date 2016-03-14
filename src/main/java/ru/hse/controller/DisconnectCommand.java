@@ -7,20 +7,10 @@ import ru.hse.model.Vertex;
  * Created by Ivan on 12.03.2016.
  */
 public class DisconnectCommand extends Command {
-    private Vertex from = null;
-    /**
-     * this vertex will be alone
-     */
-    private Vertex to = null;
 
     private Vertex vertex = null;
     private Vertex next = null;
     private Vertex previous = null;
-
-    public DisconnectCommand(Vertex from, Vertex to) {
-        this.from = from;
-        this.to = to;
-    }
 
     public DisconnectCommand(Vertex vertex) {
         this.vertex = vertex;
@@ -37,6 +27,9 @@ public class DisconnectCommand extends Command {
         if (previous != null) {
             model.disconnectVertices(previous, vertex);
             previous.setNext(vertex.getNext());
+        }
+        if (next != null && previous != null) {
+            model.connectVertices(previous, next);
         }
         vertex.setNext(null);
         vertex.setPrevious(null);
