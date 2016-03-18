@@ -17,6 +17,7 @@ public class ConnectVertexCommand extends Command {
      * Vertex "to" should be alone
      */
     public ConnectVertexCommand(Vertex first, Vertex second) {
+        // Vertex alone
         if (second.getNext() != null || second.getPrevious() != null) {
             this.from = second;
             this.to = first;

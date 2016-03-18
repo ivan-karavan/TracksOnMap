@@ -5,6 +5,7 @@ import com.vaadin.tapio.googlemaps.client.LatLon;
 import com.vaadin.tapio.googlemaps.client.events.MapClickListener;
 import com.vaadin.tapio.googlemaps.client.events.MarkerClickListener;
 import com.vaadin.tapio.googlemaps.client.events.MarkerDragListener;
+import com.vaadin.tapio.googlemaps.client.overlays.GoogleMapInfoWindow;
 import com.vaadin.tapio.googlemaps.client.overlays.GoogleMapMarker;
 import com.vaadin.ui.*;
 import ru.hse.controller.*;
@@ -146,6 +147,10 @@ public class View{
             public void markerClicked(GoogleMapMarker googleMapMarker) {
                 previousClickedVertex = lastClickedVertex;
                 lastClickedVertex = (Vertex) googleMapMarker;
+                // todo open only one infowindow for each marker
+                if (lastClickedVertex == previousClickedVertex) {
+                    map.openInfoWindow(new GoogleMapInfoWindow("Windspeed = 10\n timestomp = ", googleMapMarker));
+                }
             }
         });
 
