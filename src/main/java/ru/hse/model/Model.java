@@ -6,6 +6,7 @@ import com.vaadin.tapio.googlemaps.client.overlays.GoogleMapPolyline;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 /**
  * Created by Ivan on 12.03.2016.
@@ -16,18 +17,37 @@ public class Model {
     private HashMap<Vertex, GoogleMapPolyline> linesFromVertices;
     private HashMap<Vertex, GoogleMapPolyline> linesToVertices;
 
+    private HashSet<Track> tracks;
+
     public Model(GoogleMap map) {
         this.map = map;
         linesFromVertices = new HashMap<>();
         linesToVertices = new HashMap<>();
+        tracks = new HashSet<>();
+    }
+
+    public void addTrack(Track track) {
+        ArrayList<Vertex> vertices = track.getVertices();
+        map.addMarker(vertices.get(0));
+        int i = 1;
+        while (i < vertices.size()) {
+            map.addMarker(vertices.get(i));
+            connectVertices(vertices.get(i - 1), vertices.get(i));
+        }
+        tracks.add(track);
     }
 
     public void addVertex(Vertex vertex) {
         map.addMarker(vertex);
+//        Track track = new Track(vertex);
+//        addTrack(track);
+//        tracks.add(track);
     }
 
     public void removeVertex(Vertex vertex) {
         map.removeMarker(vertex);
+//        vertex.getParentTrack().removeVertex(vertex);
+//        //vertex.setParentTrack(null);
     }
 
     public void moveVertex(Vertex vertex, LatLon position) {
@@ -49,6 +69,14 @@ public class Model {
 
     }
 
+    public GoogleMapPolyline polylineFactory(ArrayList<LatLon> coordinates) {
+        return new GoogleMapPolyline(coordinates, Styles.TrackColor.next().value(), 1.0D , 1);
+    }
+
+    public GoogleMapPolyline polylineFactory(ArrayList<LatLon> coordinates, Styles.TrackColor style) {
+        return new GoogleMapPolyline(coordinates, style.value(), 1.0D , 1);
+    }
+
     /**
      * Draw line on the map between first and second and save this line.
      * Order is important
@@ -56,15 +84,11 @@ public class Model {
      * @param second end of the line
      */
     public void connectVertices(Vertex first, Vertex second) {
-        // на будущее
-//        if (first.getWindSpeed() > 0) {
-//            strokeColor, strokeWigth, strokeOpacity
-//        }
         if (!(first == null || second == null)) {
             ArrayList<LatLon> coordinates = new ArrayList<>(2);
             coordinates.add(first.getPosition());
             coordinates.add(second.getPosition());
-            GoogleMapPolyline line = new GoogleMapPolyline(coordinates);
+            GoogleMapPolyline line = polylineFactory(coordinates);
             map.addPolyline(line);
             linesFromVertices.put(first, line);
             linesToVertices.put(second, line);

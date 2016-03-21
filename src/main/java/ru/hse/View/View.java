@@ -10,6 +10,7 @@ import com.vaadin.tapio.googlemaps.client.overlays.GoogleMapMarker;
 import com.vaadin.ui.*;
 import ru.hse.controller.*;
 import ru.hse.model.Model;
+import ru.hse.model.Styles;
 import ru.hse.model.Vertex;
 
 /**
@@ -28,7 +29,7 @@ public class View{
     private HorizontalLayout bottomRowOfButtons;
     private HorizontalLayout topRowOfButtons;
     private Button connectVertices;
-    private Button disconnectVertices;
+    private Button disconnectVertex;
     private Button undo;
     private Button redo;
     private Button loadData;
@@ -114,18 +115,18 @@ public class View{
         bottomRowOfButtons.addComponent(connectVertices);
 
 
-        disconnectVertices = new Button("Disconnect Vertices", new Button.ClickListener() {
+        disconnectVertex = new Button("Disconnect Vertex", new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
                 if (lastClickedVertex != null) {
-                    Command disconnectVertices = new DisconnectCommand(lastClickedVertex);
-                    controller.handle(disconnectVertices);
+                    Command disconnectVertex = new DisconnectCommand(lastClickedVertex);
+                    controller.handle(disconnectVertex);
 
                     lastClickedVertex = previousClickedVertex = null;
                 }
             }
         });
-        bottomRowOfButtons.addComponent(disconnectVertices);
+        bottomRowOfButtons.addComponent(disconnectVertex);
 
 
         removeVertex = new Button("Remove Vertex", new Button.ClickListener() {
@@ -167,7 +168,7 @@ public class View{
         map.addMapClickListener(new MapClickListener() {
             @Override
             public void mapClicked(LatLon latLon) {
-                Vertex vertex = new Vertex("new", latLon, null);
+                Vertex vertex = new Vertex("new", latLon, "https://maps.google.com/mapfiles/ms/icons/blue-dot.png");
                 Command addVertex = new AddVertexCommand(vertex);
                 controller.handle(addVertex);
 
