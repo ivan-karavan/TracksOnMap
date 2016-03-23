@@ -28,7 +28,8 @@ public class Model {
 
     public void addTrack(Track track) {
         ArrayList<Vertex> vertices = track.getVertices();
-        map.addMarker(vertices.get(0));
+        //map.addMarker(vertices.get(0));
+        map.addMarker(track.getFirst());
         int i = 1;
         while (i < vertices.size()) {
             map.addMarker(vertices.get(i));
@@ -37,17 +38,29 @@ public class Model {
         tracks.add(track);
     }
 
+    /**
+     * Adds new track with one vertex
+     * @param vertex first vertex in track
+     */
+    public void addNewTrack(Vertex vertex) {
+        Track track = new Track(vertex);
+        addTrack(track);
+    }
+
+    /**
+     * Does not remove full track from the map, only from {@code tracks}
+     * @param track empty track
+     */
+    public void removeTrack(Track track) {
+        tracks.remove(track);
+    }
+
     public void addVertex(Vertex vertex) {
         map.addMarker(vertex);
-//        Track track = new Track(vertex);
-//        addTrack(track);
-//        tracks.add(track);
     }
 
     public void removeVertex(Vertex vertex) {
         map.removeMarker(vertex);
-//        vertex.getParentTrack().removeVertex(vertex);
-//        //vertex.setParentTrack(null);
     }
 
     public void moveVertex(Vertex vertex, LatLon position) {
@@ -61,8 +74,10 @@ public class Model {
         linesFromVertices.remove(vertex.getPrevious());
         linesToVertices.remove(vertex);
 
-        connectVertices(vertex, vertex.getNext());
-        connectVertices(vertex.getPrevious(), vertex);
+//        connectVertices(vertex, vertex.getNext());
+//        connectVertices(vertex.getPrevious(), vertex);
+        connectVertices(vertex, vertex.getParentTrack().getVertexAfter(vertex));
+        connectVertices(vertex.getParentTrack().getVertexBefore(vertex), vertex);
     }
 
     public void loadDataFromDB() {
@@ -88,7 +103,8 @@ public class Model {
             ArrayList<LatLon> coordinates = new ArrayList<>(2);
             coordinates.add(first.getPosition());
             coordinates.add(second.getPosition());
-            GoogleMapPolyline line = polylineFactory(coordinates);
+            GoogleMapPolyline line = polylineFactory(coordinates, first.getParentTrack().getStyle());
+            //GoogleMapPolyline line = polylineFactory(coordinates);
             map.addPolyline(line);
             linesFromVertices.put(first, line);
             linesToVertices.put(second, line);

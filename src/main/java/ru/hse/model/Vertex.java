@@ -1,5 +1,6 @@
 package ru.hse.model;
 
+import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.tapio.googlemaps.client.LatLon;
 import com.vaadin.tapio.googlemaps.client.overlays.GoogleMapMarker;
 
@@ -10,6 +11,8 @@ public class Vertex extends GoogleMapMarker {
 
     private double windSpeed;
     private Object timeStamp;
+
+    private Track parentTrack = null;
 
     /**
      * neighbour of this vertex
@@ -37,6 +40,22 @@ public class Vertex extends GoogleMapMarker {
 
     public double getWindSpeed() {
         return windSpeed;
+    }
+
+    public Track getParentTrack() {
+        return parentTrack;
+    }
+
+    public void setParentTrack(Track parentTrack) {
+        this.parentTrack = parentTrack;
+    }
+
+    public int getPositionInTrack() {
+        return parentTrack.getPosition(this);
+    }
+
+    public Vertex VertexFactory(LatLon position) {
+        return new Vertex("new vertex", position, Styles.Icon.LOWSPEED.value());
     }
 
     public Vertex() {
@@ -69,5 +88,19 @@ public class Vertex extends GoogleMapMarker {
         this.next = next;
         this.windSpeed = 0;
         timeStamp = null;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(this == obj) {
+            return true;
+        } else if(obj == null) {
+            return false;
+        } else if(this.getClass() != obj.getClass()) {
+            return false;
+        } else {
+            Vertex other = (Vertex) obj;
+            return this.getId() == other.getId();
+        }
     }
 }

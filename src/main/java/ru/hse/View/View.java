@@ -101,10 +101,13 @@ public class View{
                     Command connectVertices;
                     if ((lastClickedVertex.getNext() == null && lastClickedVertex.getPrevious() == null) ||
                             (previousClickedVertex.getNext() == null && previousClickedVertex.getPrevious() == null)) {
-                        connectVertices = new ConnectVertexCommand(lastClickedVertex, previousClickedVertex);
+                        //connectVertices = new ConnectVertexCommand(lastClickedVertex, previousClickedVertex);
+                        //todo swap params if necessary
+                        connectVertices = new ConnectVertexToTrackCommand(previousClickedVertex, lastClickedVertex);
                     }
                     else {
-                        connectVertices = new ConnectTracksCommand(lastClickedVertex, previousClickedVertex);
+                        //connectVertices = new ConnectTracksCommand(lastClickedVertex, previousClickedVertex);
+                        connectVertices = new ConnectingTracksCommand(previousClickedVertex, lastClickedVertex);
                     }
                     controller.handle(connectVertices);
 
@@ -119,7 +122,8 @@ public class View{
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
                 if (lastClickedVertex != null) {
-                    Command disconnectVertex = new DisconnectCommand(lastClickedVertex);
+                    //Command disconnectVertex = new DisconnectCommand(lastClickedVertex);
+                    Command disconnectVertex = new DisconnectFromTrackCommand(lastClickedVertex, lastClickedVertex.getParentTrack());
                     controller.handle(disconnectVertex);
 
                     lastClickedVertex = previousClickedVertex = null;
@@ -133,7 +137,8 @@ public class View{
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
                 if (lastClickedVertex != null) {
-                    Command removeVertex = new RemoveVertexCommand(lastClickedVertex);
+                    //Command removeVertex = new RemoveVertexCommand(lastClickedVertex);
+                    Command removeVertex = new RemoveCommand(lastClickedVertex, lastClickedVertex.getParentTrack());
                     controller.handle(removeVertex);
 
                     lastClickedVertex = previousClickedVertex = null;

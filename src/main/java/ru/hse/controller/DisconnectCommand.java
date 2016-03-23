@@ -1,6 +1,7 @@
 package ru.hse.controller;
 
 import ru.hse.model.Model;
+import ru.hse.model.Track;
 import ru.hse.model.Vertex;
 
 /**
@@ -9,6 +10,8 @@ import ru.hse.model.Vertex;
 public class DisconnectCommand extends Command {
 
     private Vertex vertex = null;
+//    private int position = -1;
+//    private Track parentTrack = null;
     private Vertex next = null;
     private Vertex previous = null;
 
@@ -33,6 +36,10 @@ public class DisconnectCommand extends Command {
         }
         vertex.setNext(null);
         vertex.setPrevious(null);
+//        position = vertex.getPositionInTrack();
+//        vertex.getParentTrack().removeVertex(vertex);
+//        parentTrack = vertex.getParentTrack();
+//        vertex.setParentTrack(null);
     }
 
     @Override
@@ -50,5 +57,7 @@ public class DisconnectCommand extends Command {
             previous.setNext(vertex);
             vertex.setPrevious(previous);
         }
+//        vertex.setParentTrack(parentTrack);
+//        parentTrack.addToPosition(position, vertex);
     }
 }
