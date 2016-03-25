@@ -28,7 +28,6 @@ public class Model {
 
     public void addTrack(Track track) {
         ArrayList<Vertex> vertices = track.getVertices();
-        //map.addMarker(vertices.get(0));
         map.addMarker(track.getFirst());
         int i = 1;
         while (i < vertices.size()) {
@@ -81,7 +80,12 @@ public class Model {
     }
 
     public void loadDataFromDB() {
+        try {
+            Class.forName("org.postgresql.Driver");
 
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     public GoogleMapPolyline polylineFactory(ArrayList<LatLon> coordinates) {
@@ -89,7 +93,7 @@ public class Model {
     }
 
     public GoogleMapPolyline polylineFactory(ArrayList<LatLon> coordinates, Styles.TrackColor style) {
-        return new GoogleMapPolyline(coordinates, style.value(), 1.0D , 1);
+        return new GoogleMapPolyline(coordinates, style.value(), 1.0D , 2);
     }
 
     /**

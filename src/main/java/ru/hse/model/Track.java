@@ -43,6 +43,7 @@ public class Track {
 
     public void add(Vertex vertex) {
         vertices.add(vertex);
+        vertex.setParentTrack(this);
     }
 
     public void addFirst(Vertex vertex) {
@@ -112,5 +113,9 @@ public class Track {
             vertex.setParentTrack(this);
         }
         following.clear();
+    }
+
+    public void subList(int fromIndex, int toIndex) {
+        vertices.subList(fromIndex, toIndex);
     }
 }

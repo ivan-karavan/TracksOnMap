@@ -42,6 +42,10 @@ public class Vertex extends GoogleMapMarker {
         return windSpeed;
     }
 
+    public void setWindSpeed(double windSpeed) {
+        this.windSpeed = windSpeed;
+    }
+
     public Track getParentTrack() {
         return parentTrack;
     }

@@ -27,6 +27,7 @@ public class ConnectingTracksCommand extends Command {
      * @param begin to this vertex will be draw line
      */
     public ConnectingTracksCommand(Vertex end, Vertex begin) {
+        // todo swap if necessary
         this.end = end;
         this.begin = begin;
         first = end.getParentTrack();
@@ -46,7 +47,7 @@ public class ConnectingTracksCommand extends Command {
         for (int i = first.getPosition(begin); i < first.size(); i++) {
             second.add(first.getVertices().get(i));
         }
-        first.getVertices().subList(0, first.getPosition(begin));
+        first.subList(0, first.getPosition(begin));
         model.disconnectVertices(end, begin);
         model.addTrack(second);
     }

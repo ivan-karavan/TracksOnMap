@@ -22,7 +22,10 @@ public class Styles {
     public enum TrackColor {
         BLUE("#0000FF"),
         RED("#FF0000"),
-        GREEN("#00FF00");
+        GREEN("#059000"),
+        ORANGE("#FF7700"),
+        PURPLE("7700FF"),
+        BLACK("#000000");
 
         TrackColor(String value) {
             this.value = value;
@@ -36,7 +39,7 @@ public class Styles {
         }
 
         public static TrackColor next() {
-            current = current % 3;
+            current = current % 6;
             current++;
             return TrackColor.values()[current - 1];
         }

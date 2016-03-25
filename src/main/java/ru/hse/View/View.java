@@ -34,6 +34,8 @@ public class View{
     private Button redo;
     private Button loadData;
     private Button removeVertex;
+    private Button setWindSpeed;
+    private TextField windSpeedTextField;
 
     public View() {
         map = new GoogleMap(null, null, null);
@@ -57,7 +59,7 @@ public class View{
         topRowOfButtons.setHeight("37px");
         fullContent.addComponent(topRowOfButtons);
 
-        map.setCenter(new LatLon(60, 20));
+        map.setCenter(new LatLon(55.75, 37.61));
         map.setZoom(10);
         map.setSizeFull();
         fullContent.addComponent(model.getMap());
@@ -102,7 +104,6 @@ public class View{
                     if ((lastClickedVertex.getNext() == null && lastClickedVertex.getPrevious() == null) ||
                             (previousClickedVertex.getNext() == null && previousClickedVertex.getPrevious() == null)) {
                         //connectVertices = new ConnectVertexCommand(lastClickedVertex, previousClickedVertex);
-                        //todo swap params if necessary
                         connectVertices = new ConnectVertexToTrackCommand(previousClickedVertex, lastClickedVertex);
                     }
                     else {
@@ -155,7 +156,10 @@ public class View{
                 lastClickedVertex = (Vertex) googleMapMarker;
                 // todo open only one infowindow for each marker
                 if (lastClickedVertex == previousClickedVertex) {
-                    map.openInfoWindow(new GoogleMapInfoWindow("Windspeed = 10\n timestomp = ", googleMapMarker));
+                    map.openInfoWindow(new GoogleMapInfoWindow("Windspeed = " + lastClickedVertex.getWindSpeed() +
+                            "\r\n timestamp = "
+                            , googleMapMarker));
+                    windSpeedTextField.setValue("" + lastClickedVertex.getWindSpeed());
                 }
             }
         });
@@ -181,5 +185,22 @@ public class View{
                 lastClickedVertex = vertex;
             }
         });
+
+        //
+        windSpeedTextField = new TextField();
+        windSpeedTextField.setWidth("50px");
+        bottomRowOfButtons.addComponent(windSpeedTextField);
+        setWindSpeed = new Button("Set windspeed", new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                if (lastClickedVertex != null) {
+                    if (windSpeedTextField.getValue() != null) {
+                        lastClickedVertex.setWindSpeed(Double.parseDouble(windSpeedTextField.getValue()));
+                    }
+                }
+            }
+        });
+        setWindSpeed.setHeight("30px");
+        bottomRowOfButtons.addComponent(setWindSpeed);
     }
 }
