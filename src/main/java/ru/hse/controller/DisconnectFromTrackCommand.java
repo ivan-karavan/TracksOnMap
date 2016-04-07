@@ -36,24 +36,27 @@ public class DisconnectFromTrackCommand extends Command {
             cases = 3;
         }
         track.removeVertex(vertex);
+        model.addNewTrack(vertex);
     }
 
     @Override
     public void unexecute(Model model) {
+        model.removeEmptyTrack(vertex.getParentTrack());
         switch (cases) {
             case 1:
-                model.connectVertices(vertex, track.getFirst());
                 track.addFirst(vertex);
+                model.connectVertices(vertex, track.getFirst());
                 break;
             case 2:
-                model.connectVertices(track.getLast(), vertex);
                 track.add(vertex);
+                model.connectVertices(track.getLast(), vertex);
                 break;
-            case 3:;
+            case 3:
                 track.addToPosition(position, vertex);
                 model.disconnectVertices(track.getVertexBefore(vertex), track.getVertexAfter(vertex));
                 model.connectVertices(track.getVertexBefore(vertex), vertex);
                 model.connectVertices(vertex, track.getVertexAfter(vertex));
+                break;
         }
     }
 }

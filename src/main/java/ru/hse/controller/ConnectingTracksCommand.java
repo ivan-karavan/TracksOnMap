@@ -9,46 +9,73 @@ import ru.hse.model.Vertex;
  */
 public class ConnectingTracksCommand extends Command {
     /**
-     * this track will stay
+     * track of the {@code end}
      */
     private Track first;
 
     /**
-     * this track will be removed
+     * track of the {@code begin}
      */
     private Track second;
 
+    /**
+     * end of the track to be connected
+     * this vertex will be connected with begin of the second track
+     */
     private Vertex end;
+    /**
+     * begin of the second track to be connected
+     * will be before {@code end}
+     */
     private Vertex begin;
 
+    private boolean correctness;
+
     /**
-     *
+     * params can be only ends of tracks
      * @param end vertex from which will be connected tracks
      * @param begin to this vertex will be draw line
      */
     public ConnectingTracksCommand(Vertex end, Vertex begin) {
-        // todo swap if necessary
-        this.end = end;
-        this.begin = begin;
-        first = end.getParentTrack();
-        second = begin.getParentTrack();
+        if (end.getParentTrack().getLast().equals(end) && begin.getParentTrack().getFirst().equals(begin)) {
+            this.end = end;
+            this.begin = begin;
+            first = this.end.getParentTrack();
+            second = this.begin.getParentTrack();
+            correctness = true;
+        }
+        else if (end.getParentTrack().getFirst().equals(end) && begin.getParentTrack().getLast().equals(begin)) {
+            this.end = begin;
+            this.begin = end;
+            first = this.end.getParentTrack();
+            second = this.begin.getParentTrack();
+            correctness = true;
+        }
+        else {
+            correctness = false;
+        }
     }
 
     @Override
     public void execute(Model model) {
-        first.continueBy(second);
-        model.removeTrack(second);
-        model.connectVertices(end, begin);
-        // todo: set new style to new part of first track
+        if (correctness) {
+            first.continueBy(second);
+            model.removeEmptyTrack(second);
+            model.redrawTrack(first);
+        }
     }
 
     @Override
     public void unexecute(Model model) {
-        for (int i = first.getPosition(begin); i < first.size(); i++) {
-            second.add(first.getVertices().get(i));
+        if (correctness) {
+            model.disconnectVertices(end, begin);
+            for (int i = first.getPosition(begin); i < first.size(); i++) {
+                second.add(first.getByIndex(i));
+            }
+            first.subList(0, first.getPosition(end));
+            model.redrawTrack(first);
+            model.registerTrack(second);
+            model.redrawTrack(second);
         }
-        first.subList(0, first.getPosition(begin));
-        model.disconnectVertices(end, begin);
-        model.addTrack(second);
     }
 }

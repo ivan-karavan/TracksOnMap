@@ -8,12 +8,18 @@ import java.util.ArrayList;
 public class Track {
     private ArrayList<Vertex> vertices;
     private Styles.TrackColor style;
+    private long id;
+    private static long idCounter = 0;
 
     public Track() {
+        id = idCounter;
+        idCounter++;
         vertices = new ArrayList<>();
     }
 
     public Track(Vertex first) {
+        id = idCounter;
+        idCounter++;
         vertices = new ArrayList<>();
         vertices.add(first);
         first.setParentTrack(this);
@@ -48,10 +54,12 @@ public class Track {
 
     public void addFirst(Vertex vertex) {
         vertices.add(0, vertex);
+        vertex.setParentTrack(this);
     }
 
     public void addToPosition(int position, Vertex vertex) {
         vertices.add(position, vertex);
+        vertex.setParentTrack(this);
     }
 
     public void removeVertex(Vertex vertex) {
@@ -77,7 +85,7 @@ public class Track {
 
     public Vertex getVertexBefore(Vertex vertex) {
         int position = vertices.indexOf(vertex);
-        if (position == 0) {
+        if (position <= 0) {
             return null;
         }
         return vertices.get(position - 1);
@@ -91,8 +99,16 @@ public class Track {
         return vertices.get(position);
     }
 
+    public Vertex getByIndex(int index) {
+        return vertices.get(index);
+    }
+
     public Styles.TrackColor getStyle() {
         return style;
+    }
+
+    public long getId() {
+        return id;
     }
 
     public int size() {
@@ -105,17 +121,23 @@ public class Track {
 
     /**
      * copy vertices from following to this and clear following
-     * @param following will be clean
+     * @param following will be cleaned
      */
     public void continueBy(Track following) {
-        for (Vertex vertex : following.getVertices()) {
-            vertices.add(vertex);
-            vertex.setParentTrack(this);
-        }
+        following.getVertices().stream().forEach(vertex -> {vertices.add(vertex); vertex.setParentTrack(this);});
         following.clear();
     }
 
     public void subList(int fromIndex, int toIndex) {
-        vertices.subList(fromIndex, toIndex);
+        //vertices = vertices.subList(fromIndex, toIndex);
+        ArrayList<Vertex> subList = new ArrayList<>(toIndex + 10);
+        for (int i = fromIndex; i <= toIndex; i++) {
+            subList.add(vertices.get(i));
+        }
+        vertices = subList;
+    }
+
+    public void setStyle(Styles.TrackColor style) {
+        this.style = style;
     }
 }

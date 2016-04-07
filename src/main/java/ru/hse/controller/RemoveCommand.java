@@ -37,7 +37,7 @@ public class RemoveCommand extends Command {
         }
         track.removeVertex(vertex);
         if (track.size() == 0) {
-            model.removeTrack(track);
+            model.removeEmptyTrack(track);
         }
         vertex.setParentTrack(null);
         model.removeVertex(vertex);
@@ -54,19 +54,19 @@ public class RemoveCommand extends Command {
             vertex.setParentTrack(track);
             switch (cases) {
                 case 1:
-                    model.connectVertices(vertex, track.getFirst());
                     track.addFirst(vertex);
+                    model.connectVertices(vertex, track.getFirst());
                     break;
                 case 2:
-                    model.connectVertices(track.getLast(), vertex);
                     track.add(vertex);
+                    model.connectVertices(track.getLast(), vertex);
                     break;
                 case 3:
-                    ;
                     track.addToPosition(position, vertex);
                     model.disconnectVertices(track.getVertexBefore(vertex), track.getVertexAfter(vertex));
                     model.connectVertices(track.getVertexBefore(vertex), vertex);
                     model.connectVertices(vertex, track.getVertexAfter(vertex));
+                    break;
             }
         }
     }

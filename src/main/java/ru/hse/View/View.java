@@ -62,9 +62,21 @@ public class View{
         map.setCenter(new LatLon(55.75, 37.61));
         map.setZoom(10);
         map.setSizeFull();
+        //
+//        HorizontalLayout tableAndMap = new HorizontalLayout();
+//        tableAndMap.setSizeFull();
+//        //GridLayout table = new GridLayout(3, 10);
+//        Table table = new Table("Tracks");
+//        //table.setVisibleColumns("time", "windspeed");
+//        //table.setColumnHeaders("Time", "WindSpeed");
+//        fullContent.addComponent(tableAndMap);
+//        //tableAndMap.addComponent(table);
+//        tableAndMap.addComponent(model.getMap());
+//        tableAndMap.setExpandRatio(map, 1.0f);
+
         fullContent.addComponent(model.getMap());
         fullContent.setExpandRatio(map, 1.0f);
-
+        //
 
         bottomRowOfButtons = new HorizontalLayout();
         bottomRowOfButtons.setHeight("37px");
@@ -78,6 +90,7 @@ public class View{
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
                 controller.undo();
+                lastClickedVertex = previousClickedVertex = null;
             }
         });
         topRowOfButtons.addComponent(undo);
@@ -93,21 +106,19 @@ public class View{
         });
         topRowOfButtons.addComponent(redo);
 
-
+        /**
+         * if any vertice alone - connectVerticesCommand
+         * otherwise - connectTracksCommand
+         */
         connectVertices = new Button("Connect Vertices", new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
                 if (!(lastClickedVertex == null || previousClickedVertex == null)) {
-                    // if any vertice alone - connectVerticesCommand
-                    // otherwise - connectTracksCommand
                     Command connectVertices;
-                    if ((lastClickedVertex.getNext() == null && lastClickedVertex.getPrevious() == null) ||
-                            (previousClickedVertex.getNext() == null && previousClickedVertex.getPrevious() == null)) {
-                        //connectVertices = new ConnectVertexCommand(lastClickedVertex, previousClickedVertex);
+                    if (lastClickedVertex.getParentTrack().size() == 1 || previousClickedVertex.getParentTrack().size() == 1) {
                         connectVertices = new ConnectVertexToTrackCommand(previousClickedVertex, lastClickedVertex);
                     }
                     else {
-                        //connectVertices = new ConnectTracksCommand(lastClickedVertex, previousClickedVertex);
                         connectVertices = new ConnectingTracksCommand(previousClickedVertex, lastClickedVertex);
                     }
                     controller.handle(connectVertices);
@@ -123,7 +134,6 @@ public class View{
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
                 if (lastClickedVertex != null) {
-                    //Command disconnectVertex = new DisconnectCommand(lastClickedVertex);
                     Command disconnectVertex = new DisconnectFromTrackCommand(lastClickedVertex, lastClickedVertex.getParentTrack());
                     controller.handle(disconnectVertex);
 
@@ -138,7 +148,6 @@ public class View{
             @Override
             public void buttonClick(Button.ClickEvent clickEvent) {
                 if (lastClickedVertex != null) {
-                    //Command removeVertex = new RemoveVertexCommand(lastClickedVertex);
                     Command removeVertex = new RemoveCommand(lastClickedVertex, lastClickedVertex.getParentTrack());
                     controller.handle(removeVertex);
 
@@ -157,7 +166,7 @@ public class View{
                 // todo open only one infowindow for each marker
                 if (lastClickedVertex == previousClickedVertex) {
                     map.openInfoWindow(new GoogleMapInfoWindow("Windspeed = " + lastClickedVertex.getWindSpeed() +
-                            "\r\n timestamp = "
+                            " trackId = " + lastClickedVertex.getParentTrack().getId()
                             , googleMapMarker));
                     windSpeedTextField.setValue("" + lastClickedVertex.getWindSpeed());
                 }
@@ -177,7 +186,7 @@ public class View{
         map.addMapClickListener(new MapClickListener() {
             @Override
             public void mapClicked(LatLon latLon) {
-                Vertex vertex = new Vertex("new", latLon, "https://maps.google.com/mapfiles/ms/icons/blue-dot.png");
+                Vertex vertex = Vertex.VertexFactory(latLon);
                 Command addVertex = new AddVertexCommand(vertex);
                 controller.handle(addVertex);
 
@@ -186,7 +195,7 @@ public class View{
             }
         });
 
-        //
+
         windSpeedTextField = new TextField();
         windSpeedTextField.setWidth("50px");
         bottomRowOfButtons.addComponent(windSpeedTextField);
@@ -202,5 +211,8 @@ public class View{
         });
         setWindSpeed.setHeight("30px");
         bottomRowOfButtons.addComponent(setWindSpeed);
+
+
+        //map.getMarkers().stream().forEach(x->{Vertex y = (Vertex)x; y.setVisible(false);});
     }
 }

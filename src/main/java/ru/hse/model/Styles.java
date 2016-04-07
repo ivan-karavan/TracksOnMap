@@ -6,7 +6,7 @@ package ru.hse.model;
 public class Styles {
     public enum Icon {
         NEW(null),
-        LOWSPEED("C:\\Ivan\\Images\\markers\\blueMarker.png");
+        LOWSPEED("https://maps.google.com/mapfiles/ms/icons/blue-dot.png");
 
         Icon(String iconURL) {
             this.iconURL = iconURL;
@@ -23,7 +23,7 @@ public class Styles {
         BLUE("#0000FF"),
         RED("#FF0000"),
         GREEN("#059000"),
-        ORANGE("#FF7700"),
+        ORANGE("#FF7722"),
         PURPLE("7700FF"),
         BLACK("#000000");
 

@@ -11,6 +11,7 @@ public class ConnectVertexToTrackCommand extends Command {
     private Vertex vertex;
     private Vertex vertexInTrack;
     private Track track;
+    private Track removedTrack;
     private int cases;
 
     public ConnectVertexToTrackCommand(Vertex vertex, Vertex vertexInTrack) {
@@ -18,12 +19,18 @@ public class ConnectVertexToTrackCommand extends Command {
             this.vertex = vertexInTrack;
             this.vertexInTrack = vertex;
             this.track = vertex.getParentTrack();
+
+            this.removedTrack = vertexInTrack.getParentTrack();
         }
         else {
             this.vertex = vertex;
             this.vertexInTrack = vertexInTrack;
             this.track = vertexInTrack.getParentTrack();
+
+            this.removedTrack = vertex.getParentTrack();
         }
+
+        this.removedTrack.setStyle(this.track.getStyle());
     }
 
     @Override
@@ -54,7 +61,7 @@ public class ConnectVertexToTrackCommand extends Command {
 
     @Override
     public void unexecute(Model model) {
-        switch (cases) {
+         switch (cases) {
             case 1:
                 model.disconnectVertices(vertex, vertexInTrack);
                 break;
@@ -69,6 +76,6 @@ public class ConnectVertexToTrackCommand extends Command {
                 break;
         }
         track.removeVertex(vertex);
-        vertex.setParentTrack(null);
+        vertex.setParentTrack(removedTrack);
     }
 }

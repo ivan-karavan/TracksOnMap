@@ -58,8 +58,10 @@ public class Vertex extends GoogleMapMarker {
         return parentTrack.getPosition(this);
     }
 
-    public Vertex VertexFactory(LatLon position) {
-        return new Vertex("new vertex", position, Styles.Icon.LOWSPEED.value());
+    public static Vertex VertexFactory(LatLon position) {
+        Vertex vertex = new Vertex("new vertex", position, Styles.Icon.LOWSPEED.value());
+        vertex.setCaption(vertex.getId() + "");
+        return vertex;
     }
 
     public Vertex() {
@@ -87,11 +89,11 @@ public class Vertex extends GoogleMapMarker {
         timeStamp = null;
     }
 
-    public Vertex(String caption, LatLon position, String iconUrl, Vertex next) {
-        super(caption, position, true, iconUrl);
-        this.next = next;
-        this.windSpeed = 0;
+    public Vertex(LatLon position, String iconUrl) {
+        super("new", position, true, iconUrl);
+        windSpeed = 0;
         timeStamp = null;
+        setCaption(getId() + "");
     }
 
     @Override
@@ -105,6 +107,15 @@ public class Vertex extends GoogleMapMarker {
         } else {
             Vertex other = (Vertex) obj;
             return this.getId() == other.getId();
+        }
+    }
+
+    public void setVisible(boolean isVisible) {
+        if (isVisible) {
+            //this.setIconUrl(currentIcon);
+        }
+        else {
+            //this.setIconUrl(Styles.Icon.HIDDEN);
         }
     }
 }

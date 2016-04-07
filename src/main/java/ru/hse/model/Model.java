@@ -4,9 +4,7 @@ import com.vaadin.tapio.googlemaps.GoogleMap;
 import com.vaadin.tapio.googlemaps.client.LatLon;
 import com.vaadin.tapio.googlemaps.client.overlays.GoogleMapPolyline;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.*;
 
 /**
  * Created by Ivan on 12.03.2016.
@@ -14,10 +12,10 @@ import java.util.HashSet;
 public class Model {
     private GoogleMap map;
 
-    private HashMap<Vertex, GoogleMapPolyline> linesFromVertices;
-    private HashMap<Vertex, GoogleMapPolyline> linesToVertices;
+    private Map<Vertex, GoogleMapPolyline> linesFromVertices;
+    private Map<Vertex, GoogleMapPolyline> linesToVertices;
 
-    private HashSet<Track> tracks;
+    private Set<Track> tracks;
 
     public Model(GoogleMap map) {
         this.map = map;
@@ -37,6 +35,10 @@ public class Model {
         tracks.add(track);
     }
 
+    public void registerTrack(Track track) {
+        tracks.add(track);
+    }
+
     /**
      * Adds new track with one vertex
      * @param vertex first vertex in track
@@ -50,8 +52,15 @@ public class Model {
      * Does not remove full track from the map, only from {@code tracks}
      * @param track empty track
      */
-    public void removeTrack(Track track) {
+    public void removeEmptyTrack(Track track) {
         tracks.remove(track);
+    }
+
+    public void redrawTrack(Track track) {
+        track.getVertices().stream().forEach(vertex -> {
+            disconnectVertices(vertex, vertex.getParentTrack().getVertexAfter(vertex));
+            connectVertices(vertex, vertex.getParentTrack().getVertexAfter(vertex));
+        });
     }
 
     public void addVertex(Vertex vertex) {
@@ -63,18 +72,11 @@ public class Model {
     }
 
     public void moveVertex(Vertex vertex, LatLon position) {
+        disconnectVertices(vertex, vertex.getParentTrack().getVertexAfter(vertex));
+        disconnectVertices(vertex.getParentTrack().getVertexBefore(vertex), vertex);
+
         vertex.setPosition(position);
 
-        map.removePolyline(linesFromVertices.get(vertex));
-        linesFromVertices.remove(vertex);
-        linesToVertices.remove(vertex.getNext());
-
-        map.removePolyline(linesToVertices.get(vertex));
-        linesFromVertices.remove(vertex.getPrevious());
-        linesToVertices.remove(vertex);
-
-//        connectVertices(vertex, vertex.getNext());
-//        connectVertices(vertex.getPrevious(), vertex);
         connectVertices(vertex, vertex.getParentTrack().getVertexAfter(vertex));
         connectVertices(vertex.getParentTrack().getVertexBefore(vertex), vertex);
     }
@@ -122,9 +124,11 @@ public class Model {
      * @param second end of the line
      */
     public void disconnectVertices(Vertex first, Vertex second) {
-        map.removePolyline(linesFromVertices.get(first));
-        linesFromVertices.remove(first);
-        linesToVertices.remove(second);
+        if (!(first == null || second == null)) {
+            map.removePolyline(linesFromVertices.get(first));
+            linesFromVertices.remove(first);
+            linesToVertices.remove(second);
+        }
     }
 
     public GoogleMap getMap() {
