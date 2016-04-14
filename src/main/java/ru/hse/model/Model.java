@@ -148,9 +148,6 @@ public class Model {
      */
     public void connectVertices(Vertex first, Vertex second) {
         if (!(first == null || second == null)) {
-//            ArrayList<LatLon> coordinates = new ArrayList<>(2);
-//            coordinates.add(first.getPosition());
-//            coordinates.add(second.getPosition());
             List<LatLon> coordinates = Arrays.asList(first.getPosition(), second.getPosition());
             GoogleMapPolyline line = polylineFactory(coordinates, first.getParentTrack().getStyle());
             map.addPolyline(line);

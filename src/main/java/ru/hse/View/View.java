@@ -41,6 +41,7 @@ public class View{
     private Button loadData;
     private Button removeVertex;
     private Button setWindSpeed;
+    private Button saveChanges;
     private CheckBox hideIcons;
     private TextField windSpeedTextField;
     private TreeTable table;
@@ -225,11 +226,24 @@ public class View{
         });
         bottomRowOfButtons.addComponent(loadData);
 
-
+//        Label fromLabel = new Label("From");
+//        bottomRowOfButtons.addComponent(fromLabel);
         fromDateField = new PopupDateField();
+        //fromDateField.addFocusListener();
         bottomRowOfButtons.addComponent(fromDateField);
+//        Label toLabel = new Label("To");
+//        bottomRowOfButtons.addComponent(toLabel);
         toDateField = new PopupDateField();
         bottomRowOfButtons.addComponent(toDateField);
+
+
+        saveChanges = new Button("Save changes", new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent clickEvent) {
+
+            }
+        });
+        bottomRowOfButtons.addComponent(saveChanges);
 
 
         map.addMarkerClickListener(new MarkerClickListener() {
@@ -243,6 +257,7 @@ public class View{
                             " trackId = " + lastClickedVertex.getParentTrack().getId()
                             , googleMapMarker));
                     windSpeedTextField.setValue("" + lastClickedVertex.getWindSpeed());
+                    previousClickedVertex = null;
                 }
             }
         });
@@ -283,10 +298,7 @@ public class View{
                 }
             }
         });
-        //setWindSpeed.setHeight("50px");
         bottomRowOfButtons.addComponent(setWindSpeed);
-
-        //map.getMarkers().stream().forEach(x->{Vertex y = (Vertex)x; y.setVisible(false);});
     }
 }
 
