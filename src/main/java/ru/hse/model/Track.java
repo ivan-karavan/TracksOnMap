@@ -15,6 +15,7 @@ public class Track {
         id = idCounter;
         idCounter++;
         vertices = new ArrayList<>();
+        style = Styles.TrackColor.next();
     }
 
     public Track(Vertex first) {
@@ -24,6 +25,16 @@ public class Track {
         vertices.add(first);
         first.setParentTrack(this);
         style = Styles.TrackColor.next();
+    }
+
+    public Track(long id) {
+        this.id = id;
+        vertices = new ArrayList<>();
+        style = Styles.TrackColor.next();
+    }
+
+    public static Track TrackFactory(long id,Model model) {
+        return new Track(id);
     }
 
     /**
@@ -129,7 +140,6 @@ public class Track {
     }
 
     public void subList(int fromIndex, int toIndex) {
-        //vertices = vertices.subList(fromIndex, toIndex);
         ArrayList<Vertex> subList = new ArrayList<>(toIndex + 10);
         for (int i = fromIndex; i <= toIndex; i++) {
             subList.add(vertices.get(i));

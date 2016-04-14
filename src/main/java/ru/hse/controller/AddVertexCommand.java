@@ -16,7 +16,6 @@ public class AddVertexCommand extends Command {
     @Override
     public void execute(Model model) {
         model.addNewTrack(vertex);
-        //model.addVertex(vertex);
     }
 
     @Override

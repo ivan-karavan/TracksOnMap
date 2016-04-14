@@ -15,19 +15,19 @@ public class ConnectVertexToTrackCommand extends Command {
     private int cases;
 
     public ConnectVertexToTrackCommand(Vertex vertex, Vertex vertexInTrack) {
-        if (vertexInTrack.getParentTrack().size() == 1) {
-            this.vertex = vertexInTrack;
-            this.vertexInTrack = vertex;
-            this.track = vertex.getParentTrack();
-
-            this.removedTrack = vertexInTrack.getParentTrack();
-        }
-        else {
+        if (vertex.getParentTrack().size() == 1) {
             this.vertex = vertex;
             this.vertexInTrack = vertexInTrack;
             this.track = vertexInTrack.getParentTrack();
 
             this.removedTrack = vertex.getParentTrack();
+        }
+        else {
+            this.vertex = vertexInTrack;
+            this.vertexInTrack = vertex;
+            this.track = vertex.getParentTrack();
+
+            this.removedTrack = vertexInTrack.getParentTrack();
         }
 
         this.removedTrack.setStyle(this.track.getStyle());
