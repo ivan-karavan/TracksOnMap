@@ -15,11 +15,12 @@ public class AddVertexCommand extends Command {
 
     @Override
     public void execute(Model model) {
-        model.addVertex(vertex);
+        model.addNewTrack(vertex);
     }
 
     @Override
     public void unexecute(Model model) {
+        model.removeEmptyTrack(vertex.getParentTrack());
         model.removeVertex(vertex);
     }
 }
