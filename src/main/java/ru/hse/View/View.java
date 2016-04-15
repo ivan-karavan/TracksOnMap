@@ -1,23 +1,17 @@
 package ru.hse.view;
 
-import com.vaadin.data.util.HierarchicalContainer;
+import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.event.ItemClickEvent;
 import com.vaadin.tapio.googlemaps.GoogleMap;
 import com.vaadin.tapio.googlemaps.client.LatLon;
 import com.vaadin.tapio.googlemaps.client.events.MapClickListener;
 import com.vaadin.tapio.googlemaps.client.events.MarkerClickListener;
 import com.vaadin.tapio.googlemaps.client.events.MarkerDragListener;
 import com.vaadin.tapio.googlemaps.client.overlays.GoogleMapInfoWindow;
-import com.vaadin.tapio.googlemaps.client.overlays.GoogleMapMarker;
 import com.vaadin.ui.*;
 import ru.hse.controller.*;
 import ru.hse.model.Model;
-import ru.hse.model.Styles;
 import ru.hse.model.Vertex;
-
-import java.sql.Timestamp;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Random;
 
 /**
  * Created by Ivan on 12.03.2016.
@@ -42,11 +36,14 @@ public class View{
     private Button removeVertex;
     private Button setWindSpeed;
     private Button saveChanges;
+    private Button setTime;
     private CheckBox hideIcons;
     private TextField windSpeedTextField;
-    private TreeTable table;
+    private Table table;
     private PopupDateField fromDateField;
     private PopupDateField toDateField;
+    private PopupDateField dateField;
+    private BeanItemContainer<Vertex> container;
 
     public View() {
         map = new GoogleMap(null, null, null);
@@ -74,27 +71,24 @@ public class View{
         map.setZoom(10);
         map.setSizeFull();
 
-        //
         HorizontalLayout tableAndMap = new HorizontalLayout();
         tableAndMap.setSizeFull();
 
-        table = new TreeTable();
+
+        container = model.getContainer();
+        container.removeContainerProperty("animationEnabled");
+        container.removeContainerProperty("caption");
+        container.removeContainerProperty("draggable");
+        container.removeContainerProperty("iconUrl");
+        container.removeContainerProperty("optimized");
+        container.removeContainerProperty("parentTrack");
+        container.removeContainerProperty("positionInTrack");
+        container.removeContainerProperty("position");
+
+        table = new Table();
+        table.setContainerDataSource(container);
         table.setSizeFull();
-        table.setSelectable(true);
 
-        table.addContainerProperty("Name", String .class, 0);
-        table.addContainerProperty("ID", Long.class, 0);
-        table.setColumnWidth("ID", 22);
-        table.addContainerProperty("Lat", Double.class, 0.0);
-        table.setColumnWidth("Lat", 27);
-        table.addContainerProperty("Lon", Double.class, 0.0);
-        table.setColumnWidth("Lon", 32);
-        table.addContainerProperty("WindSpeed", Double.class, 0.0);
-        table.setColumnWidth("WindSpeed", 70);
-        table.addContainerProperty("Date", Date.class, new Date());
-
-        // filling
-        //updateTable();
 
         tableAndMap.addComponent(table);
         tableAndMap.addComponent(map);
@@ -114,46 +108,19 @@ public class View{
         fullContent.setExpandRatio(bottomRowOfButtons, 1);
     }
 
-    private void doSomethingWithTable() {
-//        table.removeAllItems();
-//        for (long trackId = 0L; trackId < 5L; trackId++) {
-//            Object trackItem = table.addItem(new Object[] {"Track " + trackId, trackId,  1.1, 1.2, 1.3, new Date()}, null);
-//            for (long vertexId = 0L; vertexId < 5L; vertexId++) {
-//                Object vertexItem = table.addItem(new Object[] {"Vertex " + vertexId, vertexId,  2.3, 2.4, 2.5, new Date()}, null);
-//                table.setParent(vertexItem, trackItem);
-//                table.setChildrenAllowed(vertexItem, false);
-//                table.setCollapsed(vertexItem, false);
-//            }
-//        }
-        Object newItemId = table.addItem();
-
-    }
-
-    private void createSmallCollection() {
-
-    }
-
     public void initListeners() {
         undo = new Button("undo");
         //undo.setIcon
-        undo.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent clickEvent) {
-                controller.undo();
-                lastClickedVertex = previousClickedVertex = null;
-            }
+        undo.addClickListener((Button.ClickListener) clickEvent -> {
+            controller.undo();
+            lastClickedVertex = previousClickedVertex = null;
         });
         topRowOfButtons.addComponent(undo);
 
 
         redo = new Button("redo");
         //redo.setIcon
-        redo.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent clickEvent) {
-                controller.redo();
-            }
-        });
+        redo.addClickListener((Button.ClickListener) clickEvent -> controller.redo());
         topRowOfButtons.addComponent(redo);
 
 
@@ -167,138 +134,145 @@ public class View{
          * if any vertice alone - connectVerticesCommand
          * otherwise - connectTracksCommand
          */
-        connectVertices = new Button("Connect Vertices", new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent clickEvent) {
-                if (!(lastClickedVertex == null || previousClickedVertex == null)) {
-                    Command connectVertices;
-                    if (lastClickedVertex.getParentTrack().size() == 1 || previousClickedVertex.getParentTrack().size() == 1) {
-                        connectVertices = new ConnectVertexToTrackCommand(previousClickedVertex, lastClickedVertex);
-                    }
-                    else {
-                        connectVertices = new ConnectingTracksCommand(previousClickedVertex, lastClickedVertex);
-                    }
-                    controller.handle(connectVertices);
-
-                    lastClickedVertex = previousClickedVertex = null;
+        connectVertices = new Button("Connect Vertices", (Button.ClickListener) clickEvent -> {
+            if (!(lastClickedVertex == null || previousClickedVertex == null)) {
+                Command connectVertices1;
+                if (lastClickedVertex.getParentTrack().size() == 1 || previousClickedVertex.getParentTrack().size() == 1) {
+                    connectVertices1 = new ConnectVertexToTrackCommand(previousClickedVertex, lastClickedVertex);
                 }
+                else {
+                    connectVertices1 = new ConnectingTracksCommand(previousClickedVertex, lastClickedVertex);
+                }
+                controller.handle(connectVertices1);
+
+                lastClickedVertex = previousClickedVertex = null;
             }
         });
         bottomRowOfButtons.addComponent(connectVertices);
 
 
-        disconnectVertex = new Button("Disconnect Vertex", new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent clickEvent) {
-                if (lastClickedVertex != null) {
-                    Command disconnectVertex = new DisconnectFromTrackCommand(lastClickedVertex, lastClickedVertex.getParentTrack());
-                    controller.handle(disconnectVertex);
+        disconnectVertex = new Button("Disconnect Vertex", (Button.ClickListener) clickEvent -> {
+            if (lastClickedVertex != null) {
+                Command disconnectVertex1 = new DisconnectFromTrackCommand(lastClickedVertex, lastClickedVertex.getParentTrack());
+                controller.handle(disconnectVertex1);
 
-                    lastClickedVertex = previousClickedVertex = null;
-                }
+                lastClickedVertex = previousClickedVertex = null;
             }
         });
         bottomRowOfButtons.addComponent(disconnectVertex);
 
 
-        removeVertex = new Button("Remove Vertex", new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent clickEvent) {
-                if (lastClickedVertex != null) {
-                    Command removeVertex = new RemoveCommand(lastClickedVertex, lastClickedVertex.getParentTrack());
-                    controller.handle(removeVertex);
+        removeVertex = new Button("Remove Vertex", (Button.ClickListener) clickEvent -> {
+            if (lastClickedVertex != null) {
+                Command removeVertex1 = new RemoveCommand(lastClickedVertex, lastClickedVertex.getParentTrack());
+                controller.handle(removeVertex1);
 
-                    lastClickedVertex = previousClickedVertex = null;
-                }
+                lastClickedVertex = previousClickedVertex = null;
             }
         });
         bottomRowOfButtons.addComponent(removeVertex);
 
 
-        loadData = new Button("Load Data", new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                if (fromDateField.getValue() != null || toDateField.getValue() != null) {
-                    Command loaddata = new LoadDataCommand(fromDateField.getValue(), toDateField.getValue());
-                    controller.handle(loaddata);
-                }
+        fromDateField = new PopupDateField();
+        fromDateField.setWidth("120px");
+        bottomRowOfButtons.addComponent(fromDateField);
+        toDateField = new PopupDateField();
+        toDateField.setWidth("120px");
+        bottomRowOfButtons.addComponent(toDateField);
+
+
+        loadData = new Button("Load Data", (Button.ClickListener) event -> {
+            if (fromDateField.getValue() != null || toDateField.getValue() != null) {
+                Command loaddata = new LoadDataCommand(fromDateField.getValue(), toDateField.getValue());
+                controller.handle(loaddata);
             }
         });
         bottomRowOfButtons.addComponent(loadData);
 
-//        Label fromLabel = new Label("From");
-//        bottomRowOfButtons.addComponent(fromLabel);
-        fromDateField = new PopupDateField();
-        //fromDateField.addFocusListener();
-        bottomRowOfButtons.addComponent(fromDateField);
-//        Label toLabel = new Label("To");
-//        bottomRowOfButtons.addComponent(toLabel);
-        toDateField = new PopupDateField();
-        bottomRowOfButtons.addComponent(toDateField);
 
-
-        saveChanges = new Button("Save changes", new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent clickEvent) {
-
+        map.addMarkerClickListener((MarkerClickListener) googleMapMarker -> {
+            previousClickedVertex = lastClickedVertex;
+            lastClickedVertex = (Vertex) googleMapMarker;
+            windSpeedTextField.setValue("" + lastClickedVertex.getWind());
+            if (lastClickedVertex.getTime() != null) {
+                dateField.setValue(lastClickedVertex.getTime());
             }
-        });
-        bottomRowOfButtons.addComponent(saveChanges);
-
-
-        map.addMarkerClickListener(new MarkerClickListener() {
-            @Override
-            public void markerClicked(GoogleMapMarker googleMapMarker) {
-                previousClickedVertex = lastClickedVertex;
-                lastClickedVertex = (Vertex) googleMapMarker;
-                // todo open only one infowindow for each marker
-                if (lastClickedVertex == previousClickedVertex) {
-                    map.openInfoWindow(new GoogleMapInfoWindow("Windspeed = " + lastClickedVertex.getWindSpeed() +
-                            " trackId = " + lastClickedVertex.getParentTrack().getId()
-                            , googleMapMarker));
-                    windSpeedTextField.setValue("" + lastClickedVertex.getWindSpeed());
-                    previousClickedVertex = null;
-                }
+            else {
+                dateField.clear();
+            }
+            // todo open only one infowindow for each marker
+            if (lastClickedVertex == previousClickedVertex) {
+                map.openInfoWindow(new GoogleMapInfoWindow(
+                        "<table>" +
+                                "  <tr>" +
+                                "    <td>LatLon = " + lastClickedVertex.getLat() + " " + lastClickedVertex.getLon() + "</td>" +
+                                "  </tr>" +
+                                "  <tr>" +
+                                "    <td>Windspeed = " + lastClickedVertex.getWind() + "</td>" +
+                                "  </tr>" +
+                                "  <tr>" +
+                                "    <td>Date = " + (lastClickedVertex.getTime()==null?"unknown":lastClickedVertex.getTime()) + "</td>" +
+                                "  </tr>" +
+                                "</table>"
+                        , googleMapMarker));
+                previousClickedVertex = null;
             }
         });
 
 
-        map.addMarkerDragListener(new MarkerDragListener() {
-            @Override
-            public void markerDragged(GoogleMapMarker googleMapMarker, LatLon latLon) {
-                Command moveVertex = new MoveVertexCommand((Vertex)googleMapMarker, latLon);
-                controller.handle(moveVertex);
-            }
+        map.addMarkerDragListener((MarkerDragListener) (googleMapMarker, latLon) -> {
+            Command moveVertex = new MoveVertexCommand((Vertex)googleMapMarker, latLon);
+            controller.handle(moveVertex);
         });
 
 
-        map.addMapClickListener(new MapClickListener() {
-            @Override
-            public void mapClicked(LatLon latLon) {
-                Vertex vertex = Vertex.VertexFactory(latLon);
-                Command addVertex = new AddVertexCommand(vertex);
-                controller.handle(addVertex);
+        map.addMapClickListener((MapClickListener) latLon -> {
+            Vertex vertex = Vertex.VertexFactory(latLon);
+            Command addVertex = new AddVertexCommand(vertex);
+            controller.handle(addVertex);
 
-                previousClickedVertex = lastClickedVertex;
-                lastClickedVertex = vertex;
-            }
+            previousClickedVertex = lastClickedVertex;
+            lastClickedVertex = vertex;
         });
 
 
         windSpeedTextField = new TextField();
         windSpeedTextField.setWidth("50px");
         bottomRowOfButtons.addComponent(windSpeedTextField);
-        setWindSpeed = new Button("Set windspeed", new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                if (lastClickedVertex != null) {
-                    if (windSpeedTextField.getValue() != null) {
-                        lastClickedVertex.setWindSpeed(Integer.parseInt(windSpeedTextField.getValue()));
-                    }
+        setWindSpeed = new Button("Set windspeed", (Button.ClickListener) event -> {
+            if (lastClickedVertex != null) {
+                if (windSpeedTextField.getValue() != null) {
+                    int speed = Integer.parseInt(windSpeedTextField.getValue());
+                    lastClickedVertex.setWind(speed);
+                    lastClickedVertex.setIconUrl(Styles.Icon.getNecessaryIcon(speed).value());
                 }
             }
         });
         bottomRowOfButtons.addComponent(setWindSpeed);
+
+
+        dateField = new PopupDateField();
+        dateField.setWidth("120px");
+        bottomRowOfButtons.addComponent(dateField);
+
+        setTime = new Button("Set Date", event -> {
+            if (lastClickedVertex != null) {
+                lastClickedVertex.setTime(dateField.getValue());
+            }
+        });
+        bottomRowOfButtons.addComponent(setTime);
+
+
+        saveChanges = new Button("Save changes", (Button.ClickListener) clickEvent -> {
+
+        });
+        bottomRowOfButtons.addComponent(saveChanges);
+
+
+        table.addItemClickListener((ItemClickEvent.ItemClickListener) event -> {
+            Vertex clicked = (Vertex)event.getItemId();
+            map.setCenter(clicked.getPosition());
+        });
     }
 }
 

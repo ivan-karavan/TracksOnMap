@@ -1,5 +1,7 @@
 package ru.hse.model;
 
+import ru.hse.view.Styles;
+
 import java.util.ArrayList;
 
 /**
@@ -120,6 +122,10 @@ public class Track {
 
     public long getId() {
         return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public int size() {

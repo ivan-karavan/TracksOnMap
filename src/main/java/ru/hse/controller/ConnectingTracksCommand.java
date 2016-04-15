@@ -60,7 +60,7 @@ public class ConnectingTracksCommand extends Command {
     public void execute(Model model) {
         if (correctness) {
             first.continueBy(second);
-            model.removeEmptyTrack(second);
+            model.unregisterTrack(second);
             model.redrawTrack(first);
         }
     }

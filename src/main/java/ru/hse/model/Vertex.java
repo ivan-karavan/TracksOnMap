@@ -1,8 +1,8 @@
 package ru.hse.model;
 
-import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.tapio.googlemaps.client.LatLon;
 import com.vaadin.tapio.googlemaps.client.overlays.GoogleMapMarker;
+import ru.hse.view.Styles;
 
 import java.sql.Timestamp;
 import java.util.Date;
@@ -12,17 +12,55 @@ import java.util.Date;
  */
 public class Vertex extends GoogleMapMarker {
 
-    private int windSpeed;
-    private Date timeStamp;
+    /**
+     * speed of wind
+     */
+    private int wind;
+    private Date time;
 
     private Track parentTrack = null;
 
-    public int getWindSpeed() {
-        return windSpeed;
+    public int getWind() {
+        return wind;
     }
 
-    public void setWindSpeed(int windSpeed) {
-        this.windSpeed = windSpeed;
+    public void setWind(int wind) {
+        this.wind = wind;
+    }
+
+    public Date getTime() {
+        return time;
+    }
+
+    public void setTime(Date time) {
+        this.time = time;
+    }
+
+    public double getLat() {
+        return getPosition().getLat();
+    }
+
+    public void setLat(double lat) {
+        getPosition().setLat(lat);
+    }
+
+    public double getLon() {
+        return getPosition().getLon();
+    }
+
+    public void setLon(double lon) {
+        getPosition().setLon(lon);
+    }
+
+    public long getIdTrack() {
+        return parentTrack.getId();
+    }
+
+    /**
+     * used only for beans
+     */
+    public void setIdTrack(long id) {
+        parentTrack.setId(id);
     }
 
     public Track getParentTrack() {
@@ -46,39 +84,40 @@ public class Vertex extends GoogleMapMarker {
     public Vertex() {
         super();
         setDraggable(true);
-        windSpeed = 0;
-        timeStamp = null;
+        wind = 0;
+        time = null;
     }
 
     public Vertex(String caption, LatLon position, String iconUrl) {
         super(caption, position, true, iconUrl);
-        windSpeed = 0;
-        timeStamp = null;
+        wind = 0;
+        time = null;
         setAnimationEnabled(true);
     }
 
-    public Vertex(long id, LatLon position, int windSpeed, Timestamp timeStamp) {
-        super(id + "", position, true, Styles.Icon.getNecessaryIcon(windSpeed).value());
-        if (windSpeed <= 0) {
-            this.windSpeed = 0;
+    public Vertex(long id, LatLon position, int wind, Timestamp time) {
+        super(id + "", position, true, Styles.Icon.getNecessaryIcon(wind).value());
+        if (wind <= 0) {
+            this.wind = 0;
         } else {
-            this.windSpeed = windSpeed;
+            this.wind = wind;
         }
         this.setId(id);
-        this.timeStamp = new Date(timeStamp.getTime());
+        this.time = new Date(time.getTime());
         setAnimationEnabled(false);
     }
 
-    public Vertex(String caption, LatLon position, String iconUrl, int windSpeed) {
+    public Vertex(String caption, LatLon position, String iconUrl, int wind) {
         super(caption, position, true, iconUrl);
-        this.windSpeed = windSpeed;
-        timeStamp = null;
+        this.wind = wind;
+        time = null;
+        setAnimationEnabled(false);
     }
 
     public Vertex(LatLon position, String iconUrl) {
         super("new", position, true, iconUrl);
-        windSpeed = 0;
-        timeStamp = null;
+        wind = 0;
+        time = null;
         setCaption(getId() + "");
     }
 
@@ -101,7 +140,7 @@ public class Vertex extends GoogleMapMarker {
             this.setIconUrl(Styles.Icon.HIDDEN.value());
         }
         else {
-            this.setIconUrl(Styles.Icon.getNecessaryIcon(windSpeed).value());
+            this.setIconUrl(Styles.Icon.getNecessaryIcon(wind).value());
         }
     }
 }

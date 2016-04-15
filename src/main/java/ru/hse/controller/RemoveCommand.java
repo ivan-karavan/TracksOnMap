@@ -37,9 +37,8 @@ public class RemoveCommand extends Command {
         }
         track.removeVertex(vertex);
         if (track.size() == 0) {
-            model.removeEmptyTrack(track);
+            model.unregisterTrack(track);
         }
-        vertex.setParentTrack(null);
         model.removeVertex(vertex);
     }
 
