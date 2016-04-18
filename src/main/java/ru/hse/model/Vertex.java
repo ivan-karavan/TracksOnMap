@@ -76,7 +76,7 @@ public class Vertex extends GoogleMapMarker {
     }
 
     public static Vertex VertexFactory(LatLon position) {
-        Vertex vertex = new Vertex("new vertex", position, Styles.Icon.LOWSPEED.value());
+        Vertex vertex = new Vertex("new vertex", position, Styles.Icon.CLICKED.value());
         vertex.setCaption(vertex.getId() + "");
         return vertex;
     }
@@ -96,7 +96,7 @@ public class Vertex extends GoogleMapMarker {
     }
 
     public Vertex(long id, LatLon position, int wind, Timestamp time) {
-        super(id + "", position, true, Styles.Icon.getNecessaryIcon(wind).value());
+        super(id + "", position, true, Styles.Icon.getNecessaryIcon(wind<=0?0:wind).value());
         if (wind <= 0) {
             this.wind = 0;
         } else {
@@ -135,9 +135,22 @@ public class Vertex extends GoogleMapMarker {
         }
     }
 
-    public void setHide(boolean hide) {
+    public void hide(boolean hide) {
         if (hide) {
             this.setIconUrl(Styles.Icon.HIDDEN.value());
+        }
+        else {
+            updateIconToCorresponding();
+        }
+    }
+
+    public void updateIconToCorresponding() {
+        setIconUrl(Styles.Icon.getNecessaryIcon(wind).value());
+    }
+
+    private void setChosen(boolean chosen) {
+        if (chosen) {
+            this.setIconUrl(Styles.Icon.CLICKED.value());
         }
         else {
             this.setIconUrl(Styles.Icon.getNecessaryIcon(wind).value());

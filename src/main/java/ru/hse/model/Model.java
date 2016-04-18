@@ -122,7 +122,7 @@ public class Model {
                     currentTrack = new Track(r.getLong(1));
                 }
                 if (unique(currentTrack)) {
-                    currentTrack.add(new Vertex(r.getLong(2), new LatLon(r.getLong(3), r.getLong(4)),
+                    currentTrack.add(new Vertex(r.getLong(2), new LatLon(r.getDouble(3), r.getDouble(4)),
                             r.getInt(6), r.getTimestamp(5)));
                 }
             }
@@ -194,9 +194,9 @@ public class Model {
         map.getMarkers().stream().forEach(marker -> {
             Vertex v = (Vertex) marker;
             if (hide) {
-                v.setHide(true);
+                v.hide(true);
             } else {
-                v.setHide(false);
+                v.hide(false);
             }
         });
         // helps update icons instantly

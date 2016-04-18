@@ -5,11 +5,11 @@ package ru.hse.view;
  */
 public class Styles {
     public enum Icon {
-        //NEW(null),
         LOWSPEED("http://icons.iconarchive.com/icons/icons-land/vista-map-markers/24/Map-Marker-Marker-Outside-Azure-icon.png"),
         MEDIUMSPEED("http://individual.icons-land.com/IconsPreview/MapMarkers/PNG/Centered/24x24/MapMarker_Marker_Outside_Green.png"),
         HIGHSPEED("http://icons.iconarchive.com/icons/icons-land/vista-map-markers/24/Map-Marker-Marker-Outside-Pink-icon.png"),
-        HIDDEN("http://wiki.plarium.com/images/5/59/Empty.png");
+        HIDDEN("http://wiki.plarium.com/images/5/59/Empty.png"),
+        CLICKED("http://mt.googleapis.com/vt/icon/name=icons/spotlight/spotlight-poi.png&scale=1");
 
         Icon(String iconURL) {
             this.iconURL = iconURL;
