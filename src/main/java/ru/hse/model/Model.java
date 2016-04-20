@@ -1,10 +1,10 @@
 package ru.hse.model;
 
 import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.data.util.HierarchicalContainer;
 import com.vaadin.tapio.googlemaps.GoogleMap;
 import com.vaadin.tapio.googlemaps.client.LatLon;
 import com.vaadin.tapio.googlemaps.client.overlays.GoogleMapPolyline;
+import ru.hse.view.Styles;
 
 import java.sql.*;
 import java.util.*;
@@ -18,8 +18,7 @@ public class Model {
 
     private Map<Vertex, GoogleMapPolyline> linesFromVertices;
     private Map<Vertex, GoogleMapPolyline> linesToVertices;
-
-    private BeanItemContainer cont;
+    private BeanItemContainer<Vertex> container;
 
     private Set<Track> tracks;
 
@@ -28,14 +27,15 @@ public class Model {
         linesFromVertices = new HashMap<>();
         linesToVertices = new HashMap<>();
         tracks = new HashSet<>();
+        container = new BeanItemContainer<>(Vertex.class);
     }
 
     public void addTrack(Track track) {
         ArrayList<Vertex> vertices = track.getVertices();
-        map.addMarker(track.getFirst());
+        addVertex(track.getFirst());
         int i = 1;
         while (i < vertices.size()) {
-            map.addMarker(vertices.get(i));
+            addVertex(vertices.get(i));
             connectVertices(vertices.get(i - 1), vertices.get(i));
             i++;
         }
@@ -61,7 +61,7 @@ public class Model {
      *
      * @param track empty track
      */
-    public void removeEmptyTrack(Track track) {
+    public void unregisterTrack(Track track) {
         tracks.remove(track);
     }
 
@@ -74,10 +74,12 @@ public class Model {
 
     public void addVertex(Vertex vertex) {
         map.addMarker(vertex);
+        container.addItem(vertex);
     }
 
     public void removeVertex(Vertex vertex) {
         map.removeMarker(vertex);
+        container.removeItem(vertex);
     }
 
     public void moveVertex(Vertex vertex, LatLon position) {
@@ -120,7 +122,7 @@ public class Model {
                     currentTrack = new Track(r.getLong(1));
                 }
                 if (unique(currentTrack)) {
-                    currentTrack.add(new Vertex(r.getLong(2), new LatLon(r.getLong(3), r.getLong(4)),
+                    currentTrack.add(new Vertex(r.getLong(2), new LatLon(r.getDouble(3), r.getDouble(4)),
                             r.getInt(6), r.getTimestamp(5)));
                 }
             }
@@ -171,8 +173,8 @@ public class Model {
         }
     }
 
-    public GoogleMap getMap() {
-        return map;
+    public BeanItemContainer<Vertex> getContainer() {
+        return container;
     }
 
     private Track getTrackWithId(long id) {
@@ -186,14 +188,23 @@ public class Model {
         return true;
     }
 
+    // helps update icons instantly
+    private Vertex hidded = new Vertex("", new LatLon(83, 66), Styles.Icon.HIDDEN.value(), -1);
     public void hideMarkers(boolean hide) {
-            map.getMarkers().stream().forEach(marker -> {
-                Vertex v = (Vertex) marker;
-                if (hide) {
-                    v.setHide(true);
-                } else {
-                    v.setHide(false);
-                }
-            });
+        map.getMarkers().stream().forEach(marker -> {
+            Vertex v = (Vertex) marker;
+            if (hide) {
+                v.hide(true);
+            } else {
+                v.hide(false);
+            }
+        });
+        // helps update icons instantly
+        if (hide) {
+            map.addMarker(hidded);
+        }
+        else {
+            map.removeMarker(hidded);
+        }
     }
 }

@@ -20,7 +20,7 @@ public class AddVertexCommand extends Command {
 
     @Override
     public void unexecute(Model model) {
-        model.removeEmptyTrack(vertex.getParentTrack());
+        model.unregisterTrack(vertex.getParentTrack());
         model.removeVertex(vertex);
     }
 }
